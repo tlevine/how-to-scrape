@@ -73,10 +73,57 @@ In the simple case, you have a particular url that you need
 to get it from, like maybe \url{http://thomaslevine.com}.
 In this case, you can download the file in a line of code.
 
-It gets more complicated if the file requires 
+It gets more complicated if accessing the file involves a
+more complex request. (This is discussed in section
+\ref{sec:requests}.)
+
+Either way, this is basically totally different from the parsing
+and can easily be written as a separate component by a different person.
 
 \subsection{Scraping many similar files that are already downloaded}
+If you're only scraping one page and you're not me, you'll probably just
+copy and paste the information from that page rather than writing
+a script to do it. Because of this, most scrapers are going to involve
+multiple files.
 
+To scrape multiple files, I add some logic to repeat my scraping code
+across multiple files. One way of doing this is to wrap the parsing
+code in a for-loop.
+
+In order to do this, you need some sort of identifier for each page,
+otherwise you would be overwriting something or you would not be able
+to link a particular row to a particular page.
+
+\subsubsection{Implicit identifiers}
+Let's say you that you only want aggregate data and thus don't need to link
+a particular page to a particular row. For example, it might be that you have
+thousands of music playlist files and that you are only wondering how long
+each playlist is.
+
+A dumb approach that does not involve explicitly setting an page identifier
+is just to parse through the files in arbitrary order and append each of the
+results to a database or file.
+
+With this approach, it is harder to figure out where errors are occurring
+and it is harder to restart a parse if it is stopped in the middle.
+
+\subsubsection{File name identifiers}
+A simple way of getting a less arbitrary identifier is to save the file name,
+the file path or the url from which the file was downloaded.
+
+This approach isn't unique in all cases. Two different directories could
+have files with the same name. Two different computers could have files with
+the same path. And one url could present two different files depending on
+the request that was made and the time at which the request was made.
+
+\subsubsection{Identifiers from inside the file}
+
+\subsubsection{Representation of identifiers in a datastore}
+\todo{
+add a column\\
+nosql\\
+if you're using flat files
+}
 \subsection{Scraping many similar files that need to be downloaded}
 If the pages are similar, they will probably have some similar url structure
 
