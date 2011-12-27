@@ -3,13 +3,50 @@
 \title{How I scrape websites}
 \author{Thomas Levine}
 
+\newcommand\todo[1]{\textbf{#1}}
+
 \begin{document}
 \maketitle
-
+\abstract{
 I haven't yet found a guide to web scraping that explained most of
 the things that I think should be explained. In particular, I have
 a rather structured approach to writing scrapers, and I don't think
 this approach is conveyed well in most guides to scraping. Thus, I
 create this guide.
+}
+\section{Introduction}
+\todo{Something general goes here.}
+
+In section \ref{sec:structure}, I'll discuss how I structure my
+scrapers in order to produce maintainable code.
+
+In section \ref{sec:tools}, I'll discuss when how I decide which
+languages, libraries, tools, \&c. to use for a given scraper.
+
+In section \ref{sec:database}, I'll discuss how to decide on a data
+storage method and discuss schema designs for various data stores.
+
+In section \ref{sec:selectors}, I'll discuss how to use XPath and
+CSS selectors and how to decide which one to use.
+%Basically, use whichever one you know, use CSS if you're using
+%jQuery and thus can't use XPath, and learn XPath if you don't
+%know either.
+
+In section \ref{sec:errors}, I'll discuss various errors that come
+up frequently and ways of handling such errors.
+
+\section{Structure of a scraper}\label{sec:structure}
+Dividing a program into small elements makes testing, collaboration
+and iterative development easier. Some unnecessarily fancy names for
+this are ``Don't repeat yourself (DRY)'', \todo{add more}.
+
+For scrapers, natural divisions of program components occur at boundaries
+between \emph{getting} data and \emph{parsing} data.
+\footnote{You probably want to analyze/present the data too; that would be
+another division, but I tend not to call that part ``scraping''.}
+
+I'll go through a few scraper scenarios, from simple to complex, to
+show how to I use the getting v. parsing criterion to divide scrapers
+into manageable chunks.
 
 \end{document}
