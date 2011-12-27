@@ -80,7 +80,7 @@ more complex request. (This is discussed in section
 Either way, this is basically totally different from the parsing
 and can easily be written as a separate component by a different person.
 
-\subsection{Scraping many similar files that are already downloaded}
+\subsection{Scraping many similar files that are already downloaded}\label{sec:many_downloaded}
 If you're only scraping one page and you're not me, you'll probably just
 copy and paste the information from that page rather than writing
 a script to do it. Because of this, most scrapers are going to involve
@@ -129,11 +129,82 @@ nosql\\
 if you're using flat files
 }
 
+\subsection{Scraping many similar files that need to be downloaded}\label{sec:many_to_download}
+As we saw above, parsing gets a bit more complicated when you have multiple files.
+Getting the files also gets a bit complicated.
 
-\subsubsection{File-level data}
-You can often find a more meaningful or more unique identifier from inside
+\subsubsection{Getting the files lazily or eagerly}
+\todo{How do you decide whether to download them all at once first and save them or download them one-at-a-time and parse them one-at-a-time and maybe save them one-at-a-time?}
 
-\subsection{Scraping many similar files that need to be downloaded}
-If the pages are similar, they will probably have some similar url structure
+\subsubsection{Very predictable file urls}
+If the pages are similar, they will probably have some similar url structure.
+Sometimes, you can just increment a number to get to all of the pages.
+For example, the website of the Cathedral at Santiago uses the very predictable
+url structure of
+\url{\verb+http://peregrinossantiago.es/eng/post-peregrinacion/estadisticas/?anio=%04d&mes=%02d+},
+where \url{\%04d} is the year and \url{\%02d} is the month.
+In such cases, you can list all of the urls pretty easily.
+
+\subsubsection{Less predictable file urls}
+File urls are not always that predictable. It might make sense to find a page
+that lists urls for all of the files you want to download and then to download
+each of the files.
+
+For example, you might have a page that lists search results,
+where each search result is a page that you want to parse.
+In this case, I would get the search results page(s), parse each
+of them to get the urls of the files of interest, then get and
+parse each of the files.
+
+\subsection{Scraping many files in a hierarchical page structure}
+What if, instead of one list of search results, we had a store catalog
+where items were grouped into departments? Such a situation is similar
+to the search results except that there is a hierarchical structure.
+
+The New York State statutes website is one such website. If I want to
+get to the text of a particular statute, I go to the laws menu page,
+then I click on the title, then I click on some section, then some
+subsection, and so on.
+
+In situations like this, I parse one webpage in order to get the information
+needed to get the next webpage. For example, I scrape the list of articles
+in order to get the url for each article.
+
+\subsubsection{Why this is annoying}
+One way of navigating this hierarchical structure would be to write a
+separate page parser for each non-terminal node in the hierarchy.
+For example, I would write a parser for the main laws menue, another
+parser for the Arts and Cultural Affairs title, another for the Banking
+title, \&c. For the New York State statutes, this would wind up being
+over 9,000 scrapers.
+
+\subsubsection{Why this isn't so bad}
+Fortunately, such websites are normally automatically generated from
+some database, so one adaptable scraper can normally handle the whole site.
+
+Recall the structure in section \ref{sec:many_downloaded}
+for parsing multiple similar pages. When you are scraping a hierarchy,
+pages at the same level of the hierarchy are similar.
+For example, two different articles (rather than an article and a sub-article)
+on the New York statutes page have the same html structure,
+so writing one function that can handle both of them is normally pretty easy.
+
+Different levels of the hierarchy are likely to have rather similar
+structures as well. There normally are some differences for the root
+node and the end nodes, so you might run a slightly parsing function
+on those nodes from the function you run on the other nodes.
+
+\subsubsection{How this still is annoying}
+Even if the different levels are similar, you will have to adapt your
+function in order to handle the hierarchical information. This gets
+a bit quite annoying. In particular,
+\begin{itemize}
+\item You normally want to keep track of the parents of a particular
+node in the hierarchy, so database schema is more complicated.
+\item Resuming a scrape on a crash can more complicated because you might
+have several levels of loops.
+\item Errors are more likely because you're trying to generalize a small
+bit of code to many different pages.
+\end{itemize}
 
 \end{document}
