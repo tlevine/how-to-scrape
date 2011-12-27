@@ -1,4 +1,5 @@
 \documentclass{article}
+\usepackage{hyperref}
 
 \title{How I scrape websites}
 \author{Thomas Levine}
@@ -48,8 +49,8 @@ and iterative development easier. Some unnecessarily fancy names for
 this are ``Don't repeat yourself (DRY)'', \todo{add more}.
 
 For scrapers, natural divisions of program components occur at boundaries
-between \emph{getting} data and \emph{parsing} data.
-\footnote{You probably want to analyze/present the data too; that would be
+between \emph{getting} data and \emph{parsing} data.\footnote{
+You probably want to analyze/present the data too; that would be
 another division, but I tend not to call that part ``scraping''.}
 
 I'll go through a few scraper scenarios, from simple to complex, to
@@ -139,11 +140,18 @@ Getting the files also gets a bit complicated.
 \subsubsection{Very predictable file urls}
 If the pages are similar, they will probably have some similar url structure.
 Sometimes, you can just increment a number to get to all of the pages.
-For example, the website of the Cathedral at Santiago uses the very predictable
-url structure of
-\url{\verb+http://peregrinossantiago.es/eng/post-peregrinacion/estadisticas/?anio=%04d&mes=%02d+},
-where \url{\%04d} is the year and \url{\%02d} is the month.
+For example, the website of the Cathedral at Santiago uses the a very predictable
+url structure (figure \ref{fig:santiago_urls}).
 In such cases, you can list all of the urls pretty easily.
+
+\begin{figure}
+\begin{quote}
+\url{http://peregrinossantiago.es/eng/post-peregrinacion/estadisticas/?anio=\%04d\&mes=\%02d}
+\end{quote}
+\caption{\label{fig:santiago_urls} This is the url structure for
+data on pilgrams from the website of the Cathedral at Santiago;
+\texttt{\%04d} is the year and \texttt{\%02d} is the month.}
+\end{figure}
 
 \subsubsection{Less predictable file urls}
 File urls are not always that predictable. It might make sense to find a page
