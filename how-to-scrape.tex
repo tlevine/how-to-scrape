@@ -90,11 +90,12 @@ To scrape multiple files, I add some logic to repeat my scraping code
 across multiple files. One way of doing this is to wrap the parsing
 code in a for-loop.
 
+\subsubsection{Identifiers}
 In order to do this, you need some sort of identifier for each page,
 otherwise you would be overwriting something or you would not be able
 to link a particular row to a particular page.
 
-\subsubsection{Implicit identifiers}
+\paragraph{Implicit identifiers}
 Let's say you that you only want aggregate data and thus don't need to link
 a particular page to a particular row. For example, it might be that you have
 thousands of music playlist files and that you are only wondering how long
@@ -107,7 +108,7 @@ results to a database or file.
 With this approach, it is harder to figure out where errors are occurring
 and it is harder to restart a parse if it is stopped in the middle.
 
-\subsubsection{File name identifiers}
+\paragraph{Explicit identifiers}
 A simple way of getting a less arbitrary identifier is to save the file name,
 the file path or the url from which the file was downloaded.
 
@@ -116,14 +117,22 @@ have files with the same name. Two different computers could have files with
 the same path. And one url could present two different files depending on
 the request that was made and the time at which the request was made.
 
-\subsubsection{Identifiers from inside the file}
+If the file name or url is not unique, you can generate a unique number
+for each file or page. This doesn't necessarily help with the tracking of
+errors, but it does allow you to link data based on the page from which
+they were scraped.
 
-\subsubsection{Representation of identifiers in a datastore}
+\paragraph{Representation of identifiers in a datastore}
 \todo{
 add a column\\
 nosql\\
 if you're using flat files
 }
+
+
+\subsubsection{File-level data}
+You can often find a more meaningful or more unique identifier from inside
+
 \subsection{Scraping many similar files that need to be downloaded}
 If the pages are similar, they will probably have some similar url structure
 
