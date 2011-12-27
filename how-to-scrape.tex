@@ -20,17 +20,24 @@ create this guide.
 In section \ref{sec:structure}, I'll discuss how I structure my
 scrapers in order to produce maintainable code.
 
-In section \ref{sec:tools}, I'll discuss when how I decide which
-languages, libraries, tools, \&c. to use for a given scraper.
-
-In section \ref{sec:database}, I'll discuss how to decide on a data
-storage method and discuss schema designs for various data stores.
-
-In section \ref{sec:selectors}, I'll discuss how to use XPath and
-CSS selectors and how to decide which one to use.
+In section \ref{sec:parsing}, I'll discuss how to navigate a variety
+of source documents (mostly XML though) to extract structured
+data. I'll also discuss how to use XPath and CSS selectors and how
+to decide which one to use.
 %Basically, use whichever one you know, use CSS if you're using
 %jQuery and thus can't use XPath, and learn XPath if you don't
 %know either.
+
+In section \ref{sec:tools}, I'll discuss when how I decide which
+languages, libraries, tools, \&c. to use for a given scraper.
+
+In section \ref{sec:requests}, I'll discuss how to scrape websites
+that use, cookies, POST requests or authentication. In handling
+situations like these, I categorize my approaches into two categories:
+(1) using a browser and (2) reverse-engineering website logic.
+
+In section \ref{sec:database}, I'll discuss how to decide on a data
+storage method and discuss schema designs for various data stores.
 
 In section \ref{sec:errors}, I'll discuss various errors that come
 up frequently and ways of handling such errors.
@@ -48,5 +55,29 @@ another division, but I tend not to call that part ``scraping''.}
 I'll go through a few scraper scenarios, from simple to complex, to
 show how to I use the getting v. parsing criterion to divide scrapers
 into manageable chunks.
+
+\subsection{Scraping one file that is already downloaded}
+Once you have the file on your computer, you can think of it as
+just a plain text document (or some other type of document if it's
+not plain text). All that's left to do is parse this text.
+A proper walkthrough of this is in section \ref{sec:parsing},
+but, essentially, you figure out the structure of the page in order
+to find the data of interest and convert them to a simpler
+representation that a computer can read more easily.
+
+\subsection{Scraping one file that needs to be downloaded}
+Let's say you don't have the file on your computer but you know
+exactly how to get it.
+
+In the simple case, you have a particular url that you need
+to get it from, like maybe \url{http://thomaslevine.com}.
+In this case, you can download the file in a line of code.
+
+It gets more complicated if the file requires 
+
+\subsection{Scraping many similar files that are already downloaded}
+
+\subsection{Scraping many similar files that need to be downloaded}
+If the pages are similar, they will probably have some similar url structure
 
 \end{document}
