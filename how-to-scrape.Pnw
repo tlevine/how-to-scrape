@@ -1,0 +1,218 @@
+\documentclass{article}
+\usepackage{hyperref}
+
+\title{How I scrape websites}
+\author{Thomas Levine}
+
+\newcommand\todo[1]{\textbf{#1}}
+
+\begin{document}
+\maketitle
+\abstract{
+I haven't yet found a guide to web scraping that explained most of
+the things that I think should be explained. In particular, I have
+a rather structured approach to writing scrapers, and I don't think
+this approach is conveyed well in most guides to scraping. Thus, I
+create this guide.
+}
+\section{Introduction}
+\todo{Something general goes here.}
+
+In section \ref{sec:structure}, I'll discuss how I structure my
+scrapers in order to produce maintainable code.
+
+In section \ref{sec:parsing}, I'll discuss how to navigate a variety
+of source documents (mostly XML though) to extract structured
+data. I'll also discuss how to use XPath and CSS selectors and how
+to decide which one to use.
+%Basically, use whichever one you know, use CSS if you're using
+%jQuery and thus can't use XPath, and learn XPath if you don't
+%know either.
+
+In section \ref{sec:tools}, I'll discuss when how I decide which
+languages, libraries, tools, \&c. to use for a given scraper.
+
+In section \ref{sec:requests}, I'll discuss how to scrape websites
+that use, cookies, POST requests or authentication. In handling
+situations like these, I categorize my approaches into two categories:
+(1) using a browser and (2) reverse-engineering website logic.
+
+In section \ref{sec:database}, I'll discuss how to decide on a data
+storage method and discuss schema designs for various data stores.
+
+In section \ref{sec:errors}, I'll discuss various errors that come
+up frequently and ways of handling such errors.
+
+\section{Structure of a scraper}\label{sec:structure}
+Dividing a program into small elements makes testing, collaboration
+and iterative development easier. Some unnecessarily fancy names for
+this are ``Don't repeat yourself (DRY)'', \todo{add more}.
+
+For scrapers, natural divisions of program components occur at boundaries
+between \emph{getting} data and \emph{parsing} data.\footnote{
+You probably want to analyze/present the data too; that would be
+another division, but I tend not to call that part ``scraping''.}
+
+I'll go through a few scraper scenarios, from simple to complex, to
+show how to I use the getting v. parsing criterion to divide scrapers
+into manageable chunks.
+
+\subsection{Scraping one file that is already downloaded}
+Once you have the file on your computer, you can think of it as
+just a plain text document (or some other type of document if it's
+not plain text). All that's left to do is parse this text.
+A proper walkthrough of this is in section \ref{sec:parsing},
+but, essentially, you figure out the structure of the page in order
+to find the data of interest and convert them to a simpler
+representation that a computer can read more easily.
+
+\subsection{Scraping one file that needs to be downloaded}
+Let's say you don't have the file on your computer but you know
+exactly how to get it.
+
+In the simple case, you have a particular url that you need
+to get it from, like maybe \url{http://thomaslevine.com}.
+In this case, you can download the file in a line of code.
+
+It gets more complicated if accessing the file involves a
+more complex request. (This is discussed in section
+\ref{sec:requests}.)
+
+Either way, this is basically totally different from the parsing
+and can easily be written as a separate component by a different person.
+
+\subsection{Scraping many similar files that are already downloaded}\label{sec:many_downloaded}
+If you're only scraping one page and you're not me, you'll probably just
+copy and paste the information from that page rather than writing
+a script to do it. Because of this, most scrapers are going to involve
+multiple files.
+
+To scrape multiple files, I add some logic to repeat my scraping code
+across multiple files. One way of doing this is to wrap the parsing
+code in a for-loop.
+
+\subsubsection{Identifiers}
+In order to do this, you need some sort of identifier for each page,
+otherwise you would be overwriting something or you would not be able
+to link a particular row to a particular page.
+
+\paragraph{Implicit identifiers}
+Let's say you that you only want aggregate data and thus don't need to link
+a particular page to a particular row. For example, it might be that you have
+thousands of music playlist files and that you are only wondering how long
+each playlist is.
+
+A dumb approach that does not involve explicitly setting an page identifier
+is just to parse through the files in arbitrary order and append each of the
+results to a database or file.
+
+With this approach, it is harder to figure out where errors are occurring
+and it is harder to restart a parse if it is stopped in the middle.
+
+\paragraph{Explicit identifiers}
+A simple way of getting a less arbitrary identifier is to save the file name,
+the file path or the url from which the file was downloaded.
+
+This approach isn't unique in all cases. Two different directories could
+have files with the same name. Two different computers could have files with
+the same path. And one url could present two different files depending on
+the request that was made and the time at which the request was made.
+
+If the file name or url is not unique, you can generate a unique number
+for each file or page. This doesn't necessarily help with the tracking of
+errors, but it does allow you to link data based on the page from which
+they were scraped.
+
+\paragraph{Representation of identifiers in a datastore}
+\todo{
+add a column\\
+nosql\\
+if you're using flat files
+}
+
+\subsection{Scraping many similar files that need to be downloaded}\label{sec:many_to_download}
+As we saw above, parsing gets a bit more complicated when you have multiple files.
+Getting the files also gets a bit complicated.
+
+\subsubsection{Getting the files lazily or eagerly}
+\todo{How do you decide whether to download them all at once first and save them or download them one-at-a-time and parse them one-at-a-time and maybe save them one-at-a-time?}
+
+\subsubsection{Very predictable file urls}
+If the pages are similar, they will probably have some similar url structure.
+Sometimes, you can just increment a number to get to all of the pages.
+For example, the website of the Cathedral at Santiago uses the a very predictable
+url structure (figure \ref{fig:santiago_urls}).
+In such cases, you can list all of the urls pretty easily.
+
+\begin{figure}
+\begin{quote}
+\url{http://peregrinossantiago.es/eng/post-peregrinacion/estadisticas/?anio=\%04d\&mes=\%02d}
+\end{quote}
+\caption{\label{fig:santiago_urls} This is the url structure for
+data on pilgrams from the website of the Cathedral at Santiago;
+\texttt{\%04d} is the year and \texttt{\%02d} is the month.}
+\end{figure}
+
+\subsubsection{Less predictable file urls}
+File urls are not always that predictable. It might make sense to find a page
+that lists urls for all of the files you want to download and then to download
+each of the files.
+
+For example, you might have a page that lists search results,
+where each search result is a page that you want to parse.
+In this case, I would get the search results page(s), parse each
+of them to get the urls of the files of interest, then get and
+parse each of the files.
+
+\subsection{Scraping many files in a hierarchical page structure}
+What if, instead of one list of search results, we had a store catalog
+where items were grouped into departments? Such a situation is similar
+to the search results except that there is a hierarchical structure.
+
+The New York State statutes website is one such website. If I want to
+get to the text of a particular statute, I go to the laws menu page,
+then I click on the title, then I click on some section, then some
+subsection, and so on.
+
+In situations like this, I parse one webpage in order to get the information
+needed to get the next webpage. For example, I scrape the list of articles
+in order to get the url for each article.
+
+\subsubsection{Why this is annoying}
+One way of navigating this hierarchical structure would be to write a
+separate page parser for each non-terminal node in the hierarchy.
+For example, I would write a parser for the main laws menue, another
+parser for the Arts and Cultural Affairs title, another for the Banking
+title, \&c. For the New York State statutes, this would wind up being
+over 9,000 scrapers.
+
+\subsubsection{Why this isn't so bad}
+Fortunately, such websites are normally automatically generated from
+some database, so one adaptable scraper can normally handle the whole site.
+
+Recall the structure in section \ref{sec:many_downloaded}
+for parsing multiple similar pages. When you are scraping a hierarchy,
+pages at the same level of the hierarchy are similar.
+For example, two different articles (rather than an article and a sub-article)
+on the New York statutes page have the same html structure,
+so writing one function that can handle both of them is normally pretty easy.
+
+Different levels of the hierarchy are likely to have rather similar
+structures as well. There normally are some differences for the root
+node and the end nodes, so you might run a slightly parsing function
+on those nodes from the function you run on the other nodes.
+
+\subsubsection{How this still is annoying}
+Even if the different levels are similar, you will have to adapt your
+function in order to handle the hierarchical information. This gets
+a bit quite annoying. In particular,
+\begin{itemize}
+\item You normally want to keep track of the parents of a particular
+node in the hierarchy, so database schema is more complicated.
+\item Resuming a scrape on a crash can more complicated because you might
+have several levels of loops.
+\item Errors are more likely because you're trying to generalize a small
+bit of code to many different pages.
+\end{itemize}
+
+\end{document}
