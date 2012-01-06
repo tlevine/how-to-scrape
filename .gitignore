@@ -1,3 +1,4 @@
 *.sw[op]
 how-to-scrape.*
 !how-to-scrape.Pnw
+!how-to-scrape.py
