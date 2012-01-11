@@ -215,4 +215,11 @@ have several levels of loops.
 bit of code to many different pages.
 \end{itemize}
 
+
+\section{Parsing}
+
+\subsection{Tables}
+\subsection{Key-value pairs}
+\subsection{Nested structures}
+
 \end{document}
