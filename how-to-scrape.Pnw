@@ -87,41 +87,79 @@ copy and paste the information from that page rather than writing
 a script to do it. Because of this, most scrapers are going to involve
 multiple files.
 
-To scrape multiple files, I add some logic to repeat my scraping code
-across multiple files. One way of doing this is to wrap the parsing
-code in a for-loop.
+Since the files are so similar, there's no need to write
+a separate script for parsing each file.
+Instead, I add some logic to repeat my scraping code
+across multiple files. You can accomplish this with a loop,
+a higher-order function or a recurive function.
 
-\subsubsection{Identifiers}
-In order to do this, you need some sort of identifier for each page,
-otherwise you would be overwriting something or you would not be able
-to link a particular row to a particular page.
+I'll discuss the technical approach in section ??,
+so let's just think about the structure of the scraper.
 
-\paragraph{Implicit identifiers}
+\subsection{Aggregated data approach}
 Let's say you that you only want aggregate data and thus don't need to link
 a particular page to a particular row. For example, it might be that you have
 thousands of music playlist files and that you are only wondering how long
-each playlist is.
+a playlist is on average.
 
 A dumb approach that does not involve explicitly setting an page identifier
 is just to parse through the files in arbitrary order and append each of the
 results to a database or file.
 
-With this approach, it is harder to figure out where errors are occurring
-and it is harder to restart a parse if it is stopped in the middle.
+With this approach, you use data in the scrape, but that might not matter for your purposes.
+It will matter that this makes it harder to figure out where errors are occurring
+and to restart a parse if it is stopped in the middle.
 
-\paragraph{Explicit identifiers}
-A simple way of getting a less arbitrary identifier is to save the file name,
+\subsection{Unaggregated data approach}
+Taking the previous playlist example, what if I am interested
+in getting all of the song titles because you want to see how
+many song titles contain the word ``chainsaw''.
+In this case, I am taking more than one row from each page.
+
+\subsubsection{No identifiers}
+If I'm only taking a list of song titles from each page
+and appending the list to a database,
+I don't really care about which page the song came from.
+
+\subsubsection{Row identifiers}\label{sec:row_identifiers}
+Let's say that some of the song titles also reference pictures
+and that I want to save the pictures and link them to the song.
+Let's say further that the number of pictures varies.
+
+In order to link the title to the picture,
+I'll use some sort of identifier on the title.
+The title itself will work fine if titles aren't repeated,
+but to handle the possibility that titles are repeated,
+I'll assign a number to each title; I'll start with
+the number zero and increase the number by one for each title.
+
+%Do I relate this to urls?
+
+\subsubsection{Page identifiers}
+It's generally useful to have a page identifier as well;
+if you don't do this, you might not be able
+to link a particular row to a particular page.
+Also, having such an identifier generally makes it easier to recover from a crashed scrape.
+
+One thing you can do to get a page identifier is
+to increment a number by one for each new page.\footnote{%
+This is what I explained in section \ref{sec:row_identifiers}.}
+
+\subsubsection{Constructing identifier}
+So far, I've explained how you can use an increasing number as an identifier.
+This allows you to link data based on the page from which they were scraped, but,
+depending on the scrape, this might not help very much with
+tracking of errors and recovering from crashed scrapes.
+As such, you might want to construct the identifier differently.
+
+Some less arbitrary sorts of identifiers are the file name,
 the file path or the url from which the file was downloaded.
 
-This approach isn't unique in all cases. Two different directories could
+These ``identifiers'' aren't actually unique in all cases, however. Two different directories could
 have files with the same name. Two different computers could have files with
 the same path. And one url could present two different files depending on
 the request that was made and the time at which the request was made.
-
-If the file name or url is not unique, you can generate a unique number
-for each file or page. This doesn't necessarily help with the tracking of
-errors, but it does allow you to link data based on the page from which
-they were scraped.
+You'll need to come up with something different if these don't work.
 
 \paragraph{Representation of identifiers in a datastore}
 \todo{
