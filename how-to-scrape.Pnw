@@ -164,29 +164,7 @@ You'll need to come up with something different if these don't work.
 
 \subsection{Scraping many similar files that need to be downloaded}\label{sec:many_to_download}
 As we saw above, parsing gets a bit more complicated when you have multiple files.
-Getting the files also gets a bit complicated.
-
-\subsubsection{Do I save the raw files?}
-When we extract some information from some source files, should we save the original sources?
-In general, I prefer to save the original sources. Some benefits of doing that
-\begin{itemize}
-\item I can start running the scraper before I've figured out how to parse all of the pages.
-(This is only relevant for especially slow or large websites.)
-\item I have a backup of the original source in case it goes down.
-\item If I notice errors in the parser, I can run the parser without downloading the pages again.
-\item I can more easily separate the scraper into separate scripts, which can facilitate debugging and collaboration.
-\end{itemize}
-
-But here are some reasons why I wouldn't save them.
-\begin{itemize}
-\item Storing all of the pages would take up too much space.
-(This is only relevant for especially large scrapes.)
-\item Some scrapers are so short and simple that I don't need to split them up and save the files.
-\end{itemize}
-
-If you're just learning, I'd generally suggest that you not worry about saving the source documents.
-
-Getting the files lazily or eagerly
+Getting the files also gets a bit complicated as you need to figure out where those files are.
 
 \subsubsection{Very predictable file urls}
 If the pages are similar, they will probably have some similar url structure.
@@ -215,10 +193,31 @@ In this case, I would get the search results page(s), parse each
 of them to get the urls of the files of interest, then get and
 parse each of the files.
 
+\subsubsection{Do I save the raw files?}
+When we extract some information from some source files, should we save the original files?
+In general, I prefer to save the originals. Some benefits of doing that
+\begin{itemize}
+\item I can start running the scraper before I've figured out how to parse all of the pages.
+(This is only relevant for especially slow or large websites.)
+\item I have a backup of the original source in case it goes down.
+\item If I notice errors in the parser, I can run the parser without downloading the pages again.
+\item I can more easily separate the scraper into separate scripts, which can facilitate debugging and collaboration.
+\end{itemize}
+
+But here are some reasons why I wouldn't save them.
+\begin{itemize}
+\item Storing all of the pages would take up too much space.
+(This is only relevant for especially large scrapes.)
+\item Some scrapers are so short and simple that I don't need to split them up and save the files.
+\end{itemize}
+
+If you're just learning, I'd generally suggest that you not worry about saving the source documents.
+
 \subsection{Scraping many files in a hierarchical page structure}
-What if, instead of one list of search results, we had a store catalog
-where items were grouped into departments? Such a situation is similar
-to the search results except that there is a hierarchical structure.
+What if, instead of one list of search results, we had a catalog
+where items were grouped into sections and subsections?
+Such a situation is similar to the search results except
+that there is a hierarchical structure.
 
 The New York State statutes website is one such website. If I want to
 get to the text of a particular statute, I go to the laws menu page,
@@ -243,13 +242,13 @@ some database, so one adaptable scraper can normally handle the whole site.
 
 Recall the structure in section \ref{sec:many_downloaded}
 for parsing multiple similar pages. When you are scraping a hierarchy,
-pages at the same level of the hierarchy are similar.
+pages at the same level of the hierarchy are generally similar.
 For example, two different articles (rather than an article and a sub-article)
 on the New York statutes page have the same html structure,
 so writing one function that can handle both of them is normally pretty easy.
 
 Different levels of the hierarchy are likely to have rather similar
-structures as well. There normally are some differences for the root
+structures as well. Differences are normally larger for the root
 node and the end nodes, so you might run a slightly parsing function
 on those nodes from the function you run on the other nodes.
 
@@ -260,15 +259,14 @@ a bit quite annoying. In particular,
 \begin{itemize}
 \item You normally want to keep track of the parents of a particular
 node in the hierarchy, so database schema is more complicated.
-\item Resuming a scrape on a crash can more complicated because you might
-have several levels of loops.
+\item Resuming a scrape on a crash can more complicated.
 \item Errors are more likely because you're trying to generalize a small
 bit of code to many different pages.
 \end{itemize}
 
 
 
-
+\section{}
 
 
 \paragraph{Representation of identifiers in a datastore}
