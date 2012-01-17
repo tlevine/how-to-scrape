@@ -161,19 +161,32 @@ the same path. And one url could present two different files depending on
 the request that was made and the time at which the request was made.
 You'll need to come up with something different if these don't work.
 
-\paragraph{Representation of identifiers in a datastore}
-\todo{
-add a column\\
-nosql\\
-if you're using flat files
-}
 
 \subsection{Scraping many similar files that need to be downloaded}\label{sec:many_to_download}
 As we saw above, parsing gets a bit more complicated when you have multiple files.
 Getting the files also gets a bit complicated.
 
-\subsubsection{Getting the files lazily or eagerly}
-\todo{How do you decide whether to download them all at once first and save them or download them one-at-a-time and parse them one-at-a-time and maybe save them one-at-a-time?}
+\subsubsection{Do I save the raw files?}
+When we extract some information from some source files, should we save the original sources?
+In general, I prefer to save the original sources. Some benefits of doing that
+\begin{itemize}
+\item I can start running the scraper before I've figured out how to parse all of the pages.
+(This is only relevant for especially slow or large websites.)
+\item I have a backup of the original source in case it goes down.
+\item If I notice errors in the parser, I can run the parser without downloading the pages again.
+\item I can more easily separate the scraper into separate scripts, which can facilitate debugging and collaboration.
+\end{itemize}
+
+But here are some reasons why I wouldn't save them.
+\begin{itemize}
+\item Storing all of the pages would take up too much space.
+(This is only relevant for especially large scrapes.)
+\item Some scrapers are so short and simple that I don't need to split them up and save the files.
+\end{itemize}
+
+If you're just learning, I'd generally suggest that you not worry about saving the source documents.
+
+Getting the files lazily or eagerly
 
 \subsubsection{Very predictable file urls}
 If the pages are similar, they will probably have some similar url structure.
@@ -252,6 +265,21 @@ have several levels of loops.
 \item Errors are more likely because you're trying to generalize a small
 bit of code to many different pages.
 \end{itemize}
+
+
+
+
+
+
+\paragraph{Representation of identifiers in a datastore}
+\todo{
+add a column\\
+nosql\\
+if you're using flat files
+}
+
+
+
 
 
 \section{Parsing}
