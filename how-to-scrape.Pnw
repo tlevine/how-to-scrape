@@ -266,7 +266,32 @@ bit of code to many different pages.
 
 
 
-\section{}
+\section{Parsing}\label{sec:parsing}
+%, I'll discuss how to navigate a variety
+%of source documents (mostly XML though) to extract structured
+%data. I'll also discuss how to use XPath and CSS selectors and how
+%to decide which one to use.
+
+%Basically, use whichever one you know, use CSS if you're using
+%jQuery and thus can't use XPath, and learn XPath if you don't
+%know either.
+
+\section{Tools}\label{sec:tools}, I'll discuss when how I decide which
+languages, libraries, tools, \&c. to use for a given scraper.
+
+\section{Requests}\label{sec:requests}
+% I'll discuss how to scrape websites
+% that use, cookies, POST requests or authentication. In handling
+% situations like these, I categorize my approaches into two categories:
+% (1) using a browser and (2) reverse-engineering website logic.
+
+\section{}\label{sec:database}
+% I'll discuss how to decide on a data
+% storage method and discuss schema designs for various data stores.
+
+\section{}\label{sec:errors}
+% I'll discuss various errors that come
+% up frequently and ways of handling such errors.
 
 
 \paragraph{Representation of identifiers in a datastore}
